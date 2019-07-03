@@ -35,6 +35,10 @@ class SQL_Builder {
         $this->shemeCall = new Select($tablename);
     }
     
+    function Delete ($tablename) {
+        $this->shemeCall = new Delete($tablename);
+    }
+    
     
     /*
      * Condition - условие которое требуется передать
@@ -58,21 +62,35 @@ class SQL_Builder {
     }
     
     
+    
+     function Where(array $conditions){
+       return $this->shemeCall->WhereExample($conditions);
+    }
+    
+    function OrderBy(array $conditions){
+       return $this->shemeCall->OrderByExample($conditions);
+    }
+    
+    function GroupBy(array $conditions){
+       return $this->shemeCall->GroupBy($conditions);
+    }
+    
+    
     /*
      * Обработка непредусмотренных вызываемых функций
-     * Так же включен вызов OrderBy и GroupBy - они схожие
+     * 
      */
-    public function __call($name, array $params) {
+    public function __call($name, $params) {
         if ($this->shemeCall === null){
-            echo 'Инициализируйте команду смотри HELP';
-            die();
+             '</br>Инициализируйте команду смотри HELP</br>';
+            return;
         }
         
         if (!method_exists($this->shemeCall, $name)) {
-            echo 'В рамках класса '. get_class($this->shemeCall).' метод '.$name.' не предусмотрен';
-            die();
+            echo '</br>В рамках класса '. get_class($this->shemeCall).' метод '.$name.' не предусмотрен</br>';
+            return;
             } 
-        return $this->shemeCall->$name($params);
+       $this->shemeCall->$name($params);
         
     }
 }
@@ -81,7 +99,7 @@ $test = new SQL_Builder();
 $test->Insert('mytable');
 $test->Condition(['name=andrey','age <=> 28']);
 $querry = $test->Get();
-//$test->OrderBy();
+$test->OrderBy(['dd','dd']);
 echo $querry;
 
 echo '</br></br> SELECT TEST</br>';
@@ -89,5 +107,5 @@ $test = new SQL_Builder();
 $test->Select('testTable');
 $test->Condition(['row1','row2']);
 $test->OrderBy(['names','d']);
-$test->Where(['name','d']);
+$test->Where(['name = d','family=b']);
 echo $test->Get();

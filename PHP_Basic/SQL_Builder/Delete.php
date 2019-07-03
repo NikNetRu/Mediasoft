@@ -2,7 +2,7 @@
 
 include_once 'Engine.php';
 
-class Insert {
+class Delete {
     private $tablename = null;
     private $conditions = null;
     

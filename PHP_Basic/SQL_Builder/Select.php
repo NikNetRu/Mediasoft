@@ -16,23 +16,34 @@ class Select {
         $this->conditions = constructorLinearCondition($condition);
     }
     
-    function Where(array $condition) {
+    function WhereExample(array $condition) {
         $this->where = ' WHERE ';
-        $this->where .= constructorLinearCondition($condition);
+        $slicedCondition = SliceCondition($condition); 
+        $this->where .= constructorRavenstv($slicedCondition);
     }
     
-    function OrderBy($conditions) {
+    function OrderByExample($conditions) {
         $this->orderBy = "ORDER BY ";
         $this->orderBy .= constructorLinearCondition($conditions);
     }
     
-    function GroupBy($conditions) {
+    function GroupByExample($conditions) {
         $this->groupBy = "GROUP BY ";
         $this->groupBy .= constructorLinearCondition($conditions);
     }
     
     function GetExample() {
-        return "SELECT  $this->conditions from $this->tablename $this->where $this->groupBy $this->orderBy";
+        return "SELECT  $this->conditions FROM $this->tablename $this->where $this->groupBy $this->orderBy";
+    }
+    
+    
+     /*
+     * Обработка непредусмотренных вызываемых функций
+     * 
+     */
+    public function __call($name, $params) {
+       echo "</br>Данный метод $name не предусмотрен классом INSERT";
+        
     }
     
 }

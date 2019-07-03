@@ -55,7 +55,7 @@
            $countArray = count($array);
            $i=0;
            $result = "";
-           while ($i<$countArray-1){
+           while ($i<$countArray){
                 $result .= "$array[$i],";
                 $i++;
                 }
@@ -81,26 +81,20 @@
        return $result;
        }
        
-       
-      
        /*
-       public function __call($name, array $params) {
-        switch ($name){
-            case 'OrderBy':
-                $this->postcondition = " ORDER BY";
-                break;
-            default:
-                echo "Method $name not exist";
-                return;
-        }
-                
-        $countParams = count($params);
-        $i=0;
-        while ($i<$countParams){
-            $this->postcondition .= " $params[$i],";
-            $i++;
-            }
-        $this->postcondition = substr($this->postcondition, 0,-1); 
-        
+        * Входные данные - результат SliceCondition
+        * На выходе получаем строку admin = 0 AND ... AND z=p
+        */
+    function constructorRavenstv (array $condition) {
+       $keys = array_keys($condition['keys']);
+       $values = array_values($condition['values']);
+       $result = "";
+           $countArray = count($keys);
+           $i=0;
+           while ($i<$countArray){
+                $result .= "$keys[$i]=$values[$i] AND ";
+                $i++;
+                }
+            $result = substr($result, 0,-4);
+            return $result;
     }
-    */
