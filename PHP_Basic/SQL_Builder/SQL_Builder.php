@@ -94,18 +94,3 @@ class SQL_Builder {
         
     }
 }
-echo '</br> INSERT TEST</br>';
-$test = new SQL_Builder();
-$test->Insert('mytable');
-$test->Condition(['name=andrey','age <=> 28']);
-$querry = $test->Get();
-$test->OrderBy(['dd','dd']);
-echo $querry;
-
-echo '</br></br> SELECT TEST</br>';
-$test = new SQL_Builder();
-$test->Select('testTable');
-$test->Condition(['row1','row2']);
-$test->OrderBy(['names','d']);
-$test->Where(['name = d','family=b']);
-echo $test->Get();
