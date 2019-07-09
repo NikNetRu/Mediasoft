@@ -15,7 +15,7 @@ class SQLBuilder
         private $login = null;
         private $password = null;
         private $database = null;
-        public $result = null;
+        private $result = null;
         private $querry = null;  // результирующий запрос
         private $shemeCall = null; //содержит обьект запроса
         //
@@ -28,6 +28,13 @@ class SQLBuilder
         $this->database = $database;
     }
     
+    function setQuerrySettings ($host, $login, $password, $database)
+    {
+        $this->host = $host;
+        $this->login = $login;
+        $this->password = $password;
+        $this->database = $database;
+    }
     
     /*
      * команда INSERT SQL - создаёт класс внутри обекта SQL Builder
