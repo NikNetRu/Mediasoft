@@ -2,28 +2,45 @@
 
 include_once 'Engine.php';
 
-class Delete {
+class Delete 
+{
     private $tablename = null;
     private $conditions = null;
+    private $conditionsOr = null;
     
-    function __construct ($tablename) {
+    function __construct ($tablename) 
+    {
         $this->tablename = $tablename;
     }
     
-    function ConditionExample(array $condition) {
-        $slicedCondition = SliceCondition($condition);
-        $this->conditions = conditionInsert($slicedCondition);
+    function conditionExample (array $condition) 
+    {
+        Delete::whereExample($condition);
     }
     
-    function GetExample() {
-        return "INSERT INTO $this->tablename $this->conditions";
+    function whereExample(array $condition) 
+    {
+        $slicedCondition = sliceCondition($condition);
+        $this->conditions = 'WHERE '.constructorRavenstv($slicedCondition, 'AND');
+    }
+    
+    function whereOrExample(array $condition) 
+    {
+        $slicedCondition = sliceCondition($condition);
+        $this->conditionsOr = 'OR '.constructorRavenstv($slicedCondition, 'OR');
+    }
+    
+    function getExample() 
+    {
+        return "DELETE FROM $this->tablename $this->conditions $this->conditionsOr";
     }
     
     /*
      * Обработка непредусмотренных вызываемых функций
      * 
      */
-    public function __call($name, $params) {
-       echo "</br>Данный метод $name не предусмотрен классом INSERT</br>";        
+    public function __call($name, $params) 
+    {
+       echo "</br>Данный метод $name не предусмотрен классом DELETE</br>";        
     }
 }

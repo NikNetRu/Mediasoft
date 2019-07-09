@@ -2,20 +2,24 @@
 
 include_once 'Engine.php';
 
-class Insert {
+class Insert 
+{
     private $tablename = null;
     private $conditions = null;
     
-    function __construct ($tablename) {
+    function __construct ($tablename) 
+    {
         $this->tablename = $tablename;
     }
     
-    function ConditionExample(array $condition) {
-        $slicedCondition = SliceCondition($condition);
+    function conditionExample(array $condition) 
+    {
+        $slicedCondition = sliceCondition($condition);
         $this->conditions = conditionInsert($slicedCondition);
     }
     
-    function GetExample() {
+    function getExample() 
+    {
         return "INSERT INTO $this->tablename $this->conditions";
     }
     
@@ -23,7 +27,8 @@ class Insert {
      * Обработка непредусмотренных вызываемых функций
      * 
      */
-    public function __call($name, $params) {
+    public function __call($name, $params) 
+    {
        echo "</br>Данный метод $name не предусмотрен классом INSERT</br>";        
     }
 }
