@@ -11,7 +11,7 @@
             } 
     *   *   </style>
             
-            <form enctype="multipart/form-data" method="POST" action = "Counter.php" accept-charset="UTF-8">
+            <form enctype="multipart/form-data" method="POST" action = "Counter.php" target = "_blank" accept-charset="UTF-8">
                 <textarea id ="typingTxt" name ="typingTxt" placeholder="Введите текст"></textarea> <br>
                 <label>Или загрузите файл</label> <input id = "loadTxt" name = "loadTxt" type="file"> <br>
                 <input type = "submit"> <br>

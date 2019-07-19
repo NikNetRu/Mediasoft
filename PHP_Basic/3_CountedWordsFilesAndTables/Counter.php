@@ -1,8 +1,13 @@
+
+
 <?php
 /*
  * На входе текст
  * На выходе массив  слов [слово=>количество]
  */
+include_once 'exeTables.php';
+
+
 function textToWords ($text)
 {   
     $summaryWords = 0; //общее число слов
@@ -40,6 +45,13 @@ function createCSVFile (array $words, string $filename)
     }
 }
 
+function putToLinkedTables (pdoTables $PDO, array $words, $id)
+{
+    foreach ($words as $key => $value){
+        $PDO->insertLinkedRow($id,$key, $value);
+    }
+}
+
 function putContentToUser ($filename)
 {
     header('Content-Description: File Transfer');
@@ -49,26 +61,40 @@ function putContentToUser ($filename)
     header('Cache-Control: must-revalidate');
     header('Pragma: public');
     header('Content-Length: ' . filesize($filename));
-    readfile($filename);
+    readfile($filename); 
 }
+
 
  
 if (is_uploaded_file($_FILES['loadTxt']['tmp_name'])){
     $text = $_FILES['loadTxt'];
-    $text = file_get_contents($_FILES['loadTxt']['tmp_name']);
-    $text = mb_convert_encoding($text, 'utf-8');  //на всякий случай меняем кодировку
+    $tables = new pdoTables('text','tableMain','tableLinked'); //создаём PDO для главной и зависимой таблицы
+    $tables->createLinkedTable(); //если не существуют создаём
+    $textOriginal = file_get_contents($_FILES['loadTxt']['tmp_name']);
+    $text = mb_convert_encoding($textOriginal, 'utf-8');  //на всякий случай меняем кодировку
     $text = str_replace(PHP_EOL, ' ', $text);     //удаляем переносы строк
     $result = textToWords($text);
+    $numberWords = count($result);
     $result = counterWord($result);
+    $numberRowMain = $test->insertMainRow($text, $result);
+    putToLinkedTables ($tables, $result, $numberRowMain);
     createCSVFile($result, 'resultLoadedFile.csv');
     putContentToUser('resultLoadedFile.csv');
+    $tables->drawRowTable($numberRowMain);
 }
 
 $typingText = filter_input(INPUT_POST, "typingTxt");
 if ($typingText != null){
+    $tables = new pdoTables('text','tableMain','tableLinked'); //создаём PDO для главной и зависимой таблицы
+    $tables->createLinkedTable(); //если не существуют создаём
     $result = $typingText;
     $result = textToWords($typingText);
+    $numberWords = count($result);
     $result = counterWord($result);
+    $numberRowMain = $tables->insertMainRow($typingText, $numberWords);
+    putToLinkedTables ($tables, $result, $numberRowMain);
     createCSVFile($result, 'resultTypedText.csv');
-    putContentToUser('resultTypedText.csv');
+    putContentToUser('resultLoadedFile.csv');
+    $tables->drawRowTable($numberRowMain);
 }
+
