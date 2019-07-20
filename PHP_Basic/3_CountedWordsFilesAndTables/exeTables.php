@@ -58,7 +58,7 @@ class pdoTables
         echo 'Общее число слов '.$result[0]['numberWords'].'.</br> Искомый текст '.$result[0]['text'];
         echo '</br>';
         echo '<table border="1">';
-        $querryDetails = "SELECT word,numberWord FROM $this->nameLinked";
+        $querryDetails = "SELECT word,numberWord FROM $this->nameLinked WHERE id = '$id'";
         $result = $this->pdoObject->query($querryDetails)->fetchAll();
             for ($tr=0; $tr<$rows; $tr++){ 
             echo '<tr>';
@@ -72,3 +72,4 @@ class pdoTables
     
     
 }
+

@@ -1,5 +1,4 @@
 
-
 <?php
 /*
  * На входе текст
@@ -53,15 +52,8 @@ function putToLinkedTables (pdoTables $PDO, array $words, $id)
 }
 
 function putContentToUser ($filename)
-{
-    header('Content-Description: File Transfer');
-    header('Content-Type: application/octet-stream');
-    header('Content-Disposition: attachment; filename="'.basename($filename).'"');
-    header('Expires: 0');
-    header('Cache-Control: must-revalidate');
-    header('Pragma: public');
-    header('Content-Length: ' . filesize($filename));
-    readfile($filename); 
+{  
+    file_get_contents('send.php?filename = '.basename($filename));
 }
 
 
@@ -76,11 +68,11 @@ if (is_uploaded_file($_FILES['loadTxt']['tmp_name'])){
     $result = textToWords($text);
     $numberWords = count($result);
     $result = counterWord($result);
-    $numberRowMain = $test->insertMainRow($text, $result);
+    $numberRowMain = $tables->insertMainRow($textOriginal, $numberWords);
     putToLinkedTables ($tables, $result, $numberRowMain);
     createCSVFile($result, 'resultLoadedFile.csv');
-    putContentToUser('resultLoadedFile.csv');
     $tables->drawRowTable($numberRowMain);
+    putContentToUser('resultLoadedFile.csv');
 }
 
 $typingText = filter_input(INPUT_POST, "typingTxt");
@@ -94,7 +86,7 @@ if ($typingText != null){
     $numberRowMain = $tables->insertMainRow($typingText, $numberWords);
     putToLinkedTables ($tables, $result, $numberRowMain);
     createCSVFile($result, 'resultTypedText.csv');
-    putContentToUser('resultLoadedFile.csv');
     $tables->drawRowTable($numberRowMain);
+    putContentToUser('resultLoadedFile.csv');
 }
 
