@@ -38,7 +38,6 @@ function counterWord (array $words)
  */
 function createCSVFile (array $words, string $filename)
 {  
-    unlink($filename);
     foreach ($words as $key => $value){
         file_put_contents($filename, "$key;$value \r", FILE_APPEND);
     }
@@ -51,9 +50,9 @@ function putToLinkedTables (pdoTables $PDO, array $words, $id)
     }
 }
 
-function putContentToUser ($filename)
+function putContentToUser ()
 {  
-    file_get_contents('send.php?filename = '.basename($filename));
+    file_get_contents('send.php');
 }
 
 
@@ -71,8 +70,13 @@ if (is_uploaded_file($_FILES['loadTxt']['tmp_name'])){
     $numberRowMain = $tables->insertMainRow($textOriginal, $numberWords);
     putToLinkedTables ($tables, $result, $numberRowMain);
     createCSVFile($result, 'resultLoadedFile.csv');
+    setcookie('numTable', $numberRowMain);
+    setcookie('filename', 'resultTypedText.csv');
     $tables->drawRowTable($numberRowMain);
     putContentToUser('resultLoadedFile.csv');
+    if (file_exists('resultLoadedFile.csv')){
+    unlink('resultLoadedFile.csv');
+    }
 }
 
 $typingText = filter_input(INPUT_POST, "typingTxt");
@@ -86,7 +90,14 @@ if ($typingText != null){
     $numberRowMain = $tables->insertMainRow($typingText, $numberWords);
     putToLinkedTables ($tables, $result, $numberRowMain);
     createCSVFile($result, 'resultTypedText.csv');
+    setcookie('numTable', $numberRowMain);
+    setcookie('filename', 'resultTypedText.csv');
     $tables->drawRowTable($numberRowMain);
-    putContentToUser('resultLoadedFile.csv');
+    putContentToUser('resultTypedText.csv');
+    if (file_exists('resultTypedText.csv')){
+    unlink('resultTypedText.csv');
+    }
 }
+
+echo filter_input(INPUT_COOKIE, 'filename');
 

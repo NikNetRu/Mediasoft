@@ -1,5 +1,6 @@
 <?php
-    $filename = filter_input(POST, 'filename');
+    $filename = filter_input(INPUT_COOKIE, 'filename');
+    if ($filename != null) {
     header('Content-Description: File Transfer');
     header('Content-Type: application/octet-stream');
     header('Content-Disposition: attachment; filename="'.basename($filename).'"');
@@ -8,3 +9,4 @@
     header('Pragma: public');
     header('Content-Length: ' . filesize($filename));
     readfile($filename);
+    }
