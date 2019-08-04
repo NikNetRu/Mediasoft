@@ -4,6 +4,7 @@ class Game
     {
         this.status = null;
         this.tableID = tableID;
+        self =this;
     }
     /*
      * Вставляет X в ячейку после обтработки события, оно удаляеся
@@ -109,10 +110,10 @@ class Game
         let table = document.getElementById(this.tableID);
             let listener = function ()
             {
-                this.checkEndGame();
-                this.intellect();
+                self.checkEndGame();
+                self.intellect();
             };
-        table.addEventListener('onchange', listener);
+        table.addEventListener('click', listener);
     }
 }
 
