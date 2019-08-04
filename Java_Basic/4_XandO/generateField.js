@@ -18,7 +18,7 @@ function generateField (x,y)
     for (i=0; i < x; i++) {
         tableHTML += '<tr>';
         for (j=0; j<y; j++){
-            tableHTML += '<td></td>';
+            tableHTML += '<td id = '+'Y'+i+'X'+j+'></td>';
         }
         tableHTML += '</tr>';
     }
