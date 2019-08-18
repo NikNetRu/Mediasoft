@@ -5,8 +5,7 @@ class Game
         this.status = null;
         this.tableID = tableID;
         this.strategy = strategy;
-        this.lastX = null;
-        self =this;
+        self = this;
     }
     /*
      * Вставляет X в ячейку после обтработки события, оно удаляеся
@@ -76,10 +75,8 @@ class Game
         let rowsT = table.rows;
         let XY = '';
             for (let i=0; i < rowsT.length; i++) {
-                for (let j=0; j<3; j++){                        //!!!
+                for (let j=0; j<3; j++){                       
                 XY = document.getElementById('Y'+i+'X'+j);
-                this.lastX = {'Y':i,
-                              'X': j};
                 XY.addEventListener('click', this.insertX);
                 XY.setAttribute('contain',0);
                 }
@@ -89,43 +86,74 @@ class Game
     
     /*
      * вставка 0 в свободное поле
-     * пока рандомно потом можно дописать
+     * 
+     * random:
      * Устанавливает 0 в рандомное свободное поле,
      * устанавливает совйство contain = -1, для подсчета
      * результата, удаляет обработчик
+     * 
+     * trueTable:
+     * 1) ставим ноль во все ячейки. Если есть вариант завершения игры. СОхраняем 2 в
+     * таблицу принятия решения. В прочие ячейки 0,5.
+     * 2) Если такового решения нет. Ставим Х во все свободные ячейки. 
+     * Если существует вариант решения игры - ставим в эту ячейку 1.
+     * 3) Ищем максимум
      */
+    
     intellect()
     {   if (this.strategy == 'random'){
-        let table = document.getElementById(this.tableID);
-        let freeCell = table.querySelectorAll('[contain =\"0\"]');
-        let randomNum = parseInt(Math.random()*freeCell.length);
-        freeCell[randomNum].innerHTML = '&#128901';
-        freeCell[randomNum].setAttribute('contain',-1);
-        freeCell[randomNum].removeEventListener('click', this.insertX);
+            let table = document.getElementById(this.tableID);
+            let freeCell = table.querySelectorAll('[contain =\"0\"]');
+            let randomNum = parseInt(Math.random()*freeCell.length);
+            freeCell[randomNum].innerHTML = '&#128901';
+            freeCell[randomNum].setAttribute('contain',-1);
+            freeCell[randomNum].removeEventListener('click', self.insertX);
         }
-        if (this.strategy == 'vector'){
-        let table = document.getElementById(this.tableID);
-        let freeCell = table.querySelectorAll('[contain =\"0\"]');
-        let vectorX = parseInt(Math.random()*(2)-1);
-        let vectorY = parseInt(Math.random()*(2)-1);
-        console.log(vectorX,vectorY);
-        this.lastX.X += vectorX;
-        this.lastX.Y += vectorY;
-        for (let key in freeCell){
-            if (freeCell[key].id === 'Y'+this.lastX.Y+'X'+this.lastX.Y){
-                console.log(vectorX,vectorY);
-                console.log(freeCell[key]);
-                freeCell.innerHTML = '&#128901';
-                alert('d');
+        if (this.strategy == 'trueTable'){
+            let trueTable = null;
+            let table = document.getElementById('table');
+            let freeCell = table.querySelectorAll('[contain =\"0\"]');
+            freeCell = Array.from(freeCell);
+            
+            trueTable = freeCell.map((cell)=>{
+                cell.setAttribute('contain',-1);
+                let status = self.checkEndGame(table);
+                if (status == 'loose'){
+                    cell.setAttribute('trueTable',2);
+                    cell.setAttribute('contain',0);
+                    return;
+                }
+               cell.setAttribute('contain', 0);
+               cell.setAttribute('trueTable',0.5);
+               return;
+            });
+            
+            trueTable = freeCell.map((cell)=>{
+                cell.setAttribute('contain', 1);
+                let status = self.checkEndGame(table);
+                if (status == 'win'){
+                    cell.setAttribute('contain',0);
+                    cell.setAttribute('trueTable',1);
+                    return;
+               }
+               cell.setAttribute('contain',0);
+               cell.setAttribute('trueTable',0.5);
+               return;
+            });
+            
+            let push = table.querySelectorAll('[contain =\"0\"]');
+            push = Array.from(push);
+            let maxTrueTable = Math.max.apply(Math, push.map( (pushCell) => { return pushCell.getAttribute('trueTable'); }));
+            push = table.querySelectorAll(`[trueTable ="${maxTrueTable}"]`);
+            let randomNum = parseInt(Math.random()*push.length);
+            push[randomNum].innerHTML = '&#128901';
+            push[randomNum].setAttribute('contain',-1);
+            push[randomNum].removeEventListener('click', self.insertX);           
             }
-        }
-        //let cell = freeCell.querySelector('[id = \"Y'+this.lastY+'X'+this.lastX+'\"]');
-        //cell.innerHTML = '&#128901';
-        //cell.setAttribute('contain',-1);
-        //cell.removeEventListener('click', this.insertX);
+        
         }
         
-    }
+    
     
     /*
      * Проверка на завершение игры.
@@ -138,7 +166,7 @@ class Game
      * По идее можно упростить - когда записывается Х ли 0, то нужно сравнивать только смежные
      * ячейки - значения матрицы которые могут завершить игру, а не перебирать все
      */
-    checkEndGame ()
+    checkEndGame (table = document.getElementById('table'))
     {
         let matrix = [['Y0X0','Y0X1','Y0X2'],
                       ['Y1X0','Y1X1','Y1X2'],
@@ -149,20 +177,16 @@ class Game
                       ['Y0X0','Y1X1','Y2X2'],
                       ['Y2X0','Y1X1','Y0X2']];
         
-        let table = document.getElementById(this.tableID);
         let summ = 0;
         for (let i=0; i<matrix.length; i++) {
             for (let j=0; j<3; j++){
-                let num = document.getElementById(matrix[i][j]);
-                console.log(num);
-                summ += parseInt(num.getAttribute('contain'));
+                let num = table.querySelectorAll(`[id="${matrix[i][j]}"]`);
+                summ += parseInt(num[0].getAttribute("contain"));
             }   
             if (summ == 3) {
-                alert('you win');
                 return 'win';
             }
             if (summ == -3) {
-                alert('you loose');
                 return 'loose';
                 
             }
@@ -178,16 +202,18 @@ class Game
     {
         this.clickTable();  //навешиваем обработчики
         let table = document.getElementById(this.tableID);
-            let listener = function ()
+            let listener = () =>
             {
-                self.checkEndGame();
+                self.status = self.checkEndGame();
+                if (self.status === 'win'){alert('you win');}
+                if (self.status === 'loose'){alert('you loose');}   
                 self.intellect();
             };
         table.addEventListener('click', listener);
     }
 }
 
-gamet = new Game('table','random');
+gamet = new Game('table','trueTable');
 gamet.generateDocument();
 gamet.generateField(3,3);
 gamet.engine();
