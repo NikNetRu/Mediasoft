@@ -115,11 +115,13 @@ class Game
             let freeCell = table.querySelectorAll('[contain =\"0\"]');
             freeCell = Array.from(freeCell);
             
-            trueTable = freeCell.map((cell)=>{
+            freeCell.map((cell)=>{
                 cell.setAttribute('contain',-1);
                 let status = self.checkEndGame(table);
-                if (status == 'loose'){
+                if (status === 'loose'){
+                    console.log('status = '+status);
                     cell.setAttribute('trueTable',2);
+                    console.log(cell);
                     cell.setAttribute('contain',0);
                     return;
                 }
@@ -128,24 +130,29 @@ class Game
                return;
             });
             
-            trueTable = freeCell.map((cell)=>{
+            freeCell.map((cell)=>{
                 cell.setAttribute('contain', 1);
                 let status = self.checkEndGame(table);
-                if (status == 'win'){
+                if (status === 'win'){
+                    console.log('status = '+status);
+                    console.log(cell);
                     cell.setAttribute('contain',0);
                     cell.setAttribute('trueTable',1);
                     return;
                }
                cell.setAttribute('contain',0);
-               cell.setAttribute('trueTable',0.5);
                return;
             });
             
             let push = table.querySelectorAll('[contain =\"0\"]');
             push = Array.from(push);
             let maxTrueTable = Math.max.apply(Math, push.map( (pushCell) => { return pushCell.getAttribute('trueTable'); }));
-            push = table.querySelectorAll(`[trueTable ="${maxTrueTable}"]`);
-            let randomNum = parseInt(Math.random()*push.length);
+            console.log('maxTrueTable = ' + maxTrueTable);
+            push = table.querySelectorAll(`[trueTable ="${maxTrueTable}"]`,`[ contain =\"0\"]`);
+            let randomNum = parseInt(Math.random()*push.length-1);
+            console.log(randomNum);
+            console.log(push);
+            console.log(push[randomNum]);
             push[randomNum].innerHTML = '&#128901';
             push[randomNum].setAttribute('contain',-1);
             push[randomNum].removeEventListener('click', self.insertX);           
